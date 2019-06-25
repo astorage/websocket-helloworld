@@ -11,13 +11,13 @@
 <script type="text/javascript">
     var websocket = null;
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8080/websocket/webSocketServer");
+        websocket = new WebSocket("ws://10.10.2.176:8080/websocket/webSocketServer");
     }
     else if ('MozWebSocket' in window) {
-        websocket = new MozWebSocket("ws://localhost:8080/websocket/webSocketServer");
+        websocket = new MozWebSocket("ws://10.10.2.176:8080/websocket/webSocketServer");
     }
     else {
-        websocket = new SockJS("http://localhost:8080/sockjs/webSocketServer");
+        websocket = new SockJS("http://10.10.2.176:8080/sockjs/webSocketServer");
     }
     websocket.onopen = onOpen;
     websocket.onmessage = onMessage;
