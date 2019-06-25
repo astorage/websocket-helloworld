@@ -1,19 +1,22 @@
 package com.java.websocket_helloworld.socket;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
+@Component
 public class SpringWebSocketHandler extends TextWebSocketHandler {
-    private static final ArrayList<WebSocketSession> users;//这个会出现性能问题，最好用Map来存储，key用userid
+    private static final Map<String,WebSocketSession> userMap;//这个会出现性能问题，最好用Map来存储，key用userid
     static {
-        users = new ArrayList<WebSocketSession>();
+        userMap = new HashMap<>();
     }
 
     public SpringWebSocketHandler() {
@@ -25,11 +28,11 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      */
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // TODO Auto-generated method stub
-        System.out.println("connect to the websocket success......当前数量:"+users.size());
-        users.add(session);
+        System.out.println("connect to the websocket success......当前数量:"+userMap.size());
+        userMap.put(session.getAttributes().get("WEBSOCKET_USERNAME").toString(), session);
         //这块会实现自己业务，比如，当用户登录后，会把离线消息推送给用户
-        //TextMessage returnMessage = new TextMessage("你将收到的离线");
-        //session.sendMessage(returnMessage);
+        TextMessage returnMessage = new TextMessage("你将收到的离线");
+        session.sendMessage(returnMessage);
     }
 
     /**
@@ -38,9 +41,9 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         log.debug("websocket connection closed......");
         String username= (String) session.getAttributes().get("WEBSOCKET_USERNAME");
-        System.out.println("用户"+username+"已退出！");
-        users.remove(session);
-        System.out.println("剩余在线用户"+users.size());
+        log.info("用户"+username+"已退出！");
+        userMap.remove(session.getAttributes().get("WEBSOCKET_USERNAME").toString(), session);
+        log.info("剩余在线用户"+userMap.size());
     }
 
     /**
@@ -48,13 +51,30 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String username= (String) session.getAttributes().get("WEBSOCKET_USERNAME");
+        despatchMessage(username, message.getPayload());
         super.handleTextMessage(session, message);
     }
+
+    /**
+     * 向某个人发送消息，消息用=隔开，前面是接收消息的人，后面是消息内容
+     * @param fromUser
+     * @param message
+     */
+    private void despatchMessage(String fromUser, String message) {
+        String[] userMessage = message.split("=");
+        log.info(fromUser + "发送消息：" + userMessage[1]);
+        for (String user : userMessage[0].split(",")) {
+            sendMessageToUser(user, new TextMessage(userMessage[1]));
+        }
+    }
+
+
 
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         if(session.isOpen()){session.close();}
         log.debug("websocket connection closed......");
-        users.remove(session);
+        userMap.remove(session.getAttributes().get("WEBSOCKET_USERNAME").toString(), session);
     }
 
     public boolean supportsPartialMessages() {
@@ -69,18 +89,17 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      * @param message
      */
     public void sendMessageToUser(String userName, TextMessage message) {
-        for (WebSocketSession user : users) {
-            if (user.getAttributes().get("WEBSOCKET_USERNAME").equals(userName)) {
-                try {
-                    if (user.isOpen()) {
-                        user.sendMessage(message);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        WebSocketSession webSocketSession = userMap.get(userName);
+        if (webSocketSession != null) {
+            try {
+                if (webSocketSession.isOpen()) {
+                    webSocketSession.sendMessage(message);
                 }
-                break;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
     }
 
     /**
@@ -89,7 +108,7 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      * @param message
      */
     public void sendMessageToUsers(TextMessage message) {
-        for (WebSocketSession user : users) {
+        for (WebSocketSession user : userMap.values()) {
             try {
                 if (user.isOpen()) {
                     user.sendMessage(message);

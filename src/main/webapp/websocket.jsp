@@ -6,19 +6,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Insert title here</title>
 </head>
-<body>
 <script type="text/javascript" src="http://cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="http://cdn.bootcss.com/sockjs-client/1.1.1/sockjs.js"></script>
 <script type="text/javascript">
     var websocket = null;
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8080/websocket/socketServer");
+        websocket = new WebSocket("ws://localhost:8080/websocket/webSocketServer");
     }
     else if ('MozWebSocket' in window) {
-        websocket = new MozWebSocket("ws://localhost:8080/websocket/socketServer");
+        websocket = new MozWebSocket("ws://localhost:8080/websocket/webSocketServer");
     }
     else {
-        websocket = new SockJS("http://localhost:8080/sockjs/socketServer");
+        websocket = new SockJS("http://localhost:8080/sockjs/webSocketServer");
     }
     websocket.onopen = onOpen;
     websocket.onmessage = onMessage;
@@ -30,7 +29,9 @@
     }
 
     function onMessage(evt) {
-        alert(evt.data);
+        var inputMsg = document.getElementById("inputMsg");
+        inputMsg.value = evt.data;
+        //alert();
     }
     function onError() {}
     function onClose() {}
