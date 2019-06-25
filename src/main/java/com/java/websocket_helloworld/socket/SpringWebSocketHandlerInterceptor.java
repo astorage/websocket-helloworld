@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * WebSocket拦截器
- *
+ * 页面连接websocket服务的拦截器
  */
 public class SpringWebSocketHandlerInterceptor extends HttpSessionHandshakeInterceptor {
     @Override

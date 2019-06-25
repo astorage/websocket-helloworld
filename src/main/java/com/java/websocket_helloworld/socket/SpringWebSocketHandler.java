@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 该对象提供了客户端连接,关闭,错误,发送等方法,重写这几个方法即可实现自定义业务逻辑
+ */
 @Slf4j
 @Component
 public class SpringWebSocketHandler extends TextWebSocketHandler {
@@ -27,9 +30,8 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      * 连接成功时候，会触发页面上onopen方法
      */
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // TODO Auto-generated method stub
-        System.out.println("connect to the websocket success......当前数量:"+userMap.size());
         userMap.put(session.getAttributes().get("WEBSOCKET_USERNAME").toString(), session);
+        System.out.println("connect to the websocket success......当前数量:"+userMap.size());
         //这块会实现自己业务，比如，当用户登录后，会把离线消息推送给用户
         TextMessage returnMessage = new TextMessage("你将收到的离线");
         session.sendMessage(returnMessage);
@@ -62,10 +64,14 @@ public class SpringWebSocketHandler extends TextWebSocketHandler {
      * @param message
      */
     private void despatchMessage(String fromUser, String message) {
+        log.info(fromUser + "发送消息：" + message);
         String[] userMessage = message.split("=");
-        log.info(fromUser + "发送消息：" + userMessage[1]);
-        for (String user : userMessage[0].split(",")) {
-            sendMessageToUser(user, new TextMessage(userMessage[1]));
+        if (userMessage.length == 1) {
+            sendMessageToUsers(new TextMessage(userMessage[0]));
+        }else {
+            for (String user : userMessage[0].split(",")) {
+                sendMessageToUser(user, new TextMessage(userMessage[1]));
+            }
         }
     }
 

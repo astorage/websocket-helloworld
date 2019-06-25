@@ -40,9 +40,9 @@
         if (websocket.readyState == websocket.OPEN) {
             var msg = document.getElementById("inputMsg").value;
             websocket.send(msg);//调用后台handleTextMessage方法
-            alert("发送成功!");
+            //alert("发送成功!");
         } else {
-            alert("连接失败!");
+            //alert("连接失败!");
         }
     }
     window.close=function()
@@ -51,7 +51,7 @@
     }
 
 </script>
-请输入：<textarea rows="5" cols="10" id="inputMsg" name="inputMsg"></textarea>
+请输入：<textarea rows="5" cols="40" id="inputMsg" name="inputMsg"></textarea>
 <button onclick="doSend();">发送</button>
 </body>
 </html>

@@ -23,8 +23,10 @@ dependencies {
     compileOnly "org.projectlombok:lombok:1.18.8"
     annotationProcessor "org.projectlombok:lombok:1.18.8"
 
+    //这两个依赖，是用来解析视图的，没有这两个依赖，会下载jsp文件
+    /* jsp页面使用 */
     compile group: 'javax.servlet', name: 'jstl', version: '1.2'
-
+    /*用于编译jsp*/
     compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.21'
 
     

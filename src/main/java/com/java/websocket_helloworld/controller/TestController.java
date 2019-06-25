@@ -26,6 +26,14 @@ public class TestController {
         return "hello " + name;
     }
 
+    /**
+     * 首页
+     * @return
+     */
+    @RequestMapping("/")
+    public ModelAndView index() {
+        return new ModelAndView("index");
+    }
 
     /**
      * 登录，主要是通过HttpSessionHandshakeInterceptor 记录session
