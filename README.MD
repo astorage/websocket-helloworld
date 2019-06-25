@@ -1,2 +1,7 @@
-https://blog.csdn.net/fyhailin/article/details/79413864
-https://www.cnblogs.com/3dianpomian/p/5902084.html
+###websocket_helloworld
+
+####依赖
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.1.6.RELEASE'
+
+####测试入口都在
+   TestController中

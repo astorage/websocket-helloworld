@@ -12,13 +12,12 @@ import java.util.Map;
 
 /**
  * WebSocket拦截器
- * 页面连接websocket服务的拦截器
+ * 连接websocket服务的拦截器
  */
 public class SpringWebSocketHandlerInterceptor extends HttpSessionHandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
-        // TODO Auto-generated method stub
         System.out.println("Before Handshake");
         if (request instanceof ServletServerHttpRequest) {
             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;

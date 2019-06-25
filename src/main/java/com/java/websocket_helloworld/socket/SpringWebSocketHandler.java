@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 该对象提供了客户端连接,关闭,错误,发送等方法,重写这几个方法即可实现自定义业务逻辑
+ * 客户端连接,关闭,错误,发送等方法,重写这几个方法即可实现自定义业务逻辑
  */
 @Slf4j
 @Component
